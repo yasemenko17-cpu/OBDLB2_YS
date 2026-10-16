@@ -1,0 +1,126 @@
+"""Відкриті тести задачі 10: Профіль даних.
+
+Запуск: pytest tests/test_lab_10.py            (усі відкриті випадки)
+        pytest tests/test_lab_10.py -k S2     (лише ваш набір, наприклад другий)
+Тут лише приклади з карток варіантів; повний набір перевірок є у викладача.
+"""
+import pytest
+from labtools import run_profile
+
+
+def _ids(cases, prefix):
+    return [f"{prefix}-{c[0]}-{i}" for i, c in enumerate(cases)]
+
+
+# ---- Задача 10. Профіль даних
+
+T10 = [('S1',
+  'data_profile',
+  ('CREATE TABLE member (id integer NOT NULL, name text NOT NULL, phone text, joined date);',
+   {'tables': {'member': {'columns': [{'name': 'id', 'type': 'integer', 'nullable': False},
+                                      {'name': 'name', 'type': 'text', 'nullable': False},
+                                      {'name': 'phone', 'type': 'text', 'nullable': True},
+                                      {'name': 'joined', 'type': 'date', 'nullable': True}],
+                          'pk': ['id'],
+                          'unique': [],
+                          'fks': [],
+                          'checks': []}}},
+   ["INSERT INTO member VALUES (1, 'A', '+380', '2026-01-01'), (2, 'B', NULL, '2026-01-02'), (3, 'C', NULL, "
+    "NULL), (4, 'D', '+381', '2026-01-04')"],
+   {'tables': {'member': {'rows': 4, 'nulls': {'phone': 2, 'joined': 1}}}, 'empty': []}),
+  None),
+ ('S1',
+  'data_profile',
+  ('CREATE TABLE member (id integer NOT NULL, name text NOT NULL, phone text, joined date);',
+   {'tables': {'member': {'columns': [{'name': 'id', 'type': 'integer', 'nullable': False},
+                                      {'name': 'name', 'type': 'text', 'nullable': False},
+                                      {'name': 'phone', 'type': 'text', 'nullable': True},
+                                      {'name': 'joined', 'type': 'date', 'nullable': True}],
+                          'pk': ['id'],
+                          'unique': [],
+                          'fks': [],
+                          'checks': []}}},
+   [],
+   {'tables': {'member': {'rows': 0, 'nulls': {'phone': 0, 'joined': 0}}}, 'empty': ['member']}),
+  None),
+ ('S2',
+  'data_profile',
+  ('CREATE TABLE member (id integer NOT NULL, name text NOT NULL, phone text, joined date);\n'
+   'CREATE TABLE plan (code text NOT NULL);',
+   {'tables': {'member': {'columns': [{'name': 'id', 'type': 'integer', 'nullable': False},
+                                      {'name': 'name', 'type': 'text', 'nullable': False},
+                                      {'name': 'phone', 'type': 'text', 'nullable': True},
+                                      {'name': 'joined', 'type': 'date', 'nullable': True}],
+                          'pk': ['id'],
+                          'unique': [],
+                          'fks': [],
+                          'checks': []},
+               'plan': {'columns': [{'name': 'code', 'type': 'text', 'nullable': False}],
+                        'pk': ['code'],
+                        'unique': [],
+                        'fks': [],
+                        'checks': []}}},
+   ["INSERT INTO plan VALUES ('a'), ('b'), ('c')"],
+   {'tables': {'member': {'rows': 0, 'nulls': {'phone': 0, 'joined': 0}}, 'plan': {'rows': 3, 'nulls': {}}},
+    'empty': ['member']}),
+  None),
+ ('S2',
+  'data_profile',
+  ('CREATE TABLE z (a integer); CREATE TABLE a (b text); CREATE TABLE m (c integer);',
+   {'tables': {'z': {'columns': [{'name': 'a', 'type': 'integer', 'nullable': True}],
+                     'pk': [],
+                     'unique': [],
+                     'fks': [],
+                     'checks': []},
+               'a': {'columns': [{'name': 'b', 'type': 'text', 'nullable': True}],
+                     'pk': [],
+                     'unique': [],
+                     'fks': [],
+                     'checks': []},
+               'm': {'columns': [{'name': 'c', 'type': 'integer', 'nullable': True}],
+                     'pk': [],
+                     'unique': [],
+                     'fks': [],
+                     'checks': []}}},
+   ['INSERT INTO m VALUES (NULL)'],
+   {'tables': {'z': {'rows': 0, 'nulls': {'a': 0}},
+               'a': {'rows': 0, 'nulls': {'b': 0}},
+               'm': {'rows': 1, 'nulls': {'c': 1}}},
+    'empty': ['a', 'z']}),
+  None),
+ ('S3',
+  'data_profile',
+  ('CREATE TABLE "order" (id integer NOT NULL, "desc" text, "Group" text);',
+   {'tables': {'order': {'columns': [{'name': 'id', 'type': 'integer', 'nullable': False},
+                                     {'name': 'desc', 'type': 'text', 'nullable': True},
+                                     {'name': 'Group', 'type': 'text', 'nullable': True}],
+                         'pk': ['id'],
+                         'unique': [],
+                         'fks': [],
+                         'checks': []}}},
+   ['INSERT INTO "order" VALUES (1, NULL, \'g\'), (2, \'d\', NULL), (3, NULL, NULL)'],
+   {'tables': {'order': {'rows': 3, 'nulls': {'desc': 2, 'Group': 2}}}, 'empty': []}),
+  None),
+ ('S3',
+  'data_profile',
+  ('CREATE TABLE "Item" ("Code" text NOT NULL, "select" integer); CREATE TABLE "user" (id integer);',
+   {'tables': {'Item': {'columns': [{'name': 'Code', 'type': 'text', 'nullable': False},
+                                    {'name': 'select', 'type': 'integer', 'nullable': True}],
+                        'pk': ['Code'],
+                        'unique': [],
+                        'fks': [],
+                        'checks': []},
+               'user': {'columns': [{'name': 'id', 'type': 'integer', 'nullable': True}],
+                        'pk': [],
+                        'unique': [],
+                        'fks': [],
+                        'checks': []}}},
+   ['INSERT INTO "Item" VALUES (\'a\', 1), (\'b\', NULL)'],
+   {'tables': {'Item': {'rows': 2, 'nulls': {'select': 1}}, 'user': {'rows': 0, 'nulls': {'id': 0}}},
+    'empty': ['user']}),
+  None)]
+
+
+@pytest.mark.parametrize("case", T10, ids=_ids(T10, "T10"))
+def test_task_10(case):
+    run_profile(*case[2])

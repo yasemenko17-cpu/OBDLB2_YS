@@ -1,0 +1,7 @@
+-- Кожна перевірка складається з рядка «-- check: вид: опис» і запиту SELECT, що повертає ПОРУШЕННЯ.
+-- Порожній результат означає, що дані в порядку. Види: fk, dup, null, rule.
+-- Потрібно щонайменше 6 перевірок: 2 виду fk, 1 виду dup, 1 виду rule.
+--
+-- Приклад:
+-- -- check: fk: замовлення без клієнта
+-- SELECT o.id FROM orders o LEFT JOIN customer c ON c.id = o.customer_id WHERE c.id IS NULL;

@@ -1,0 +1,3 @@
+-- Після завантаження даних із явними id послідовності identity треба вирівняти (наступний id = максимум + 1).
+-- Приклад (замініть на свої таблиці):
+-- SELECT setval(pg_get_serial_sequence('member', 'id'), COALESCE(max(id), 0) + 1, false) FROM member;
